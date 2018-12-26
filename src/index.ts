@@ -14,6 +14,7 @@ interface IGameData {
     const lettersEl = document.querySelector(".js-letters") as HTMLElement;
     const newButton = document.querySelector(".js-new-game") as HTMLButtonElement;
     const htmlEl = document.querySelector(".js-html") as HTMLTextAreaElement;
+    const displayEl = document.querySelector(".js-display") as HTMLTextAreaElement;
 
     const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     Object.freeze(letters);
@@ -101,7 +102,9 @@ interface IGameData {
             `<br>Clues: <ul>${clueStr}</ul>`,
             `<br>Not found: ${notFound}`,
         ];
+
         htmlEl.textContent = out.join("");
+        displayEl.innerHTML = out.join("");
     };
 
     const startGame = () => {

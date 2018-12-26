@@ -1,5 +1,3 @@
-import { start } from "repl";
-
 interface IGameData {
     clues: string;
     lettersAvailable: string[];
@@ -14,8 +12,11 @@ interface IGameData {
     const phraseEl = document.querySelector(".js-phrase") as HTMLInputElement;
     const cluesEl = document.querySelector(".js-clues") as HTMLTextAreaElement;
     const lettersEl = document.querySelector(".js-letters") as HTMLElement;
+    const newButton = document.querySelector(".js-new-game") as HTMLButtonElement;
 
     const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+    const localStorageName = "hangman-game-data";
 
     const storage = (() => {
         const uid = "" + new Date().getTime();
@@ -30,11 +31,11 @@ interface IGameData {
     })();
 
     const saveGame = (gd: IGameData) => {
-        localStorage.setItem("hangman-game-data", JSON.stringify(gd));
+        localStorage.setItem(localStorageName, JSON.stringify(gd));
     };
 
     const loadGame = () => {
-        const gd = localStorage.getItem("hangman-game-data");
+        const gd = localStorage.getItem(localStorageName);
         if (gd) {
             try {
                 return JSON.parse(gd) as IGameData;
@@ -57,6 +58,8 @@ interface IGameData {
 
         letters.forEach((letter) => {
             const b = document.createElement("button");
+            b.classList.add("letter-button");
+
             b.textContent = letter;
             if (gd.lettersAvailable.indexOf(letter) === -1) {
                 b.disabled = true;
@@ -97,7 +100,6 @@ interface IGameData {
         } else {
             gameData = startGame();
         }
-        const newButton = document.querySelector(".js-new-game") as HTMLButtonElement;
 
         saveGame(gameData);
         showGame(gameData);
@@ -105,6 +107,16 @@ interface IGameData {
             const gd = startGame();
             saveGame(gd);
             showGame(gd);
+        });
+
+        cluesEl.addEventListener("change", () => {
+            const val = cluesEl.value;
+            gameData.clues = val;
+        });
+
+        phraseEl.addEventListener("change", () => {
+            const val = phraseEl.value;
+            gameData.phrase = val;
         });
     }
 })();

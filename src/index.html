@@ -3,6 +3,28 @@
 
 <head>
     <title>Hangman</title>
+
+    <style>
+        .letter-button {
+            width: 2em;
+            margin-left: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        fieldset {
+            max-width: 20em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1em;
+        }
+
+        label span {
+            width: 5em;
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,18 +42,18 @@
             </div>
             <label>
                 <label>
-                    Phrase:
+                    <span>Phrase:</span>
                     <input class="js-phrase">
                 </label>
-                <br>
+
                 <label>
-                    Clues:
+                    <span>Clues:</span>
                     <textarea class="js-clues"></textarea>
                 </label>
-                <br>
+
                 <label>
-                    Letters:
-                    <span class="js-letters"></span>
+                    <span>Letters:</span>
+                    <div class="js-letters"></div>
                 </label>
         </form>
     </fieldset>

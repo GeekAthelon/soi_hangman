@@ -1,1 +1,85 @@
-blah
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hangman</title>
+
+    <style>
+        .letter-button {
+            width: 2em;
+            margin-left: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1em;
+        }
+
+        label span {
+            width: 5em;
+            display: inline-block;
+        }
+
+        .two-col {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .two-col-left,
+        .two-col-right {
+            max-width: 20em;
+            min-width: 20em;
+            border: 2px solid red;
+            margin-right: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hangman</h1>
+
+    <p>Status:
+        <span class="js-status">Loading...</span>
+    </p>
+
+    <div class="two-col">
+
+        <fieldset class="two-col-left">
+            <legend>Game info</legend>
+            <form action="javascript:return false;">
+                <div>
+                    <button class="js-new-game" type="button">Start New Game</button>
+                </div>
+                <label>
+                    <label>
+                        <span>Phrase:</span>
+                        <input class="js-phrase">
+                    </label>
+
+                    <label>
+                        <span>Clues:</span>
+                        <textarea class="js-clues"></textarea>
+                    </label>
+
+                    <label>
+                        <span>Letters:</span>
+                        <div class="js-letters"></div>
+                    </label>
+            </form>
+        </fieldset>
+
+        <fieldset class="two-col-right">
+            <legend>HTML</legend> 
+            <textarea class="js-html" style="height:45%; width:100%"></textarea>
+            <div class="js-display" style="height:45%; width:100%"></div>
+            <div>
+                <button class="js-copy-to-clipboard">Copy <b>HTML</b> to clipboard</button>
+            </div>
+        </fieldset>
+
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>

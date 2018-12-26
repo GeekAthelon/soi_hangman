@@ -71,12 +71,16 @@ interface IGameData {
 
             lettersEl.appendChild(b);
         });
+
         // Create HTML
 
-        const out: string[] = [];
         const phraseStr = Array.from(gd.phrase).map((l) =>
             (gd.lettersAvailable.indexOf(l.toUpperCase()) === -1 ? l : "_"))
             .join(" ");
+
+        const clueStr = gd.clues.split(/\r\n|\r|\n/).map((s) =>
+            (`<li>${s}</li>`))
+            .join("");
 
         const sortedLetters = letters.map((l) => {
             const used = (gd.lettersAvailable.indexOf(l) === -1);
@@ -89,10 +93,14 @@ interface IGameData {
             .map((l) => l.letter)
             ;
 
-        out.push(`Phrase: ${phraseStr}`);
-
-        out.push(`<br>Not found: ${notFound}`);
-
+        // Don't use a multi-line string literal.
+        // SOI processes CR|LF and turns them into
+        // `<p>`.
+        const out = [
+            `Phrase: ${phraseStr}`,
+            `<br>Clues: <ul>${clueStr}</ul>`,
+            `<br>Not found: ${notFound}`,
+        ];
         htmlEl.textContent = out.join("");
     };
 
@@ -130,15 +138,21 @@ interface IGameData {
 
         cluesEl.addEventListener("change", () => {
             const val = cluesEl.value;
-            gameData.clues = val;
-            saveGame(gameData);
+            const gd = loadGame();
+            if (gd) {
+                gd.clues = val;
+                saveGame(gd);
+            }
             showGame();
         });
 
         phraseEl.addEventListener("change", () => {
             const val = phraseEl.value;
-            gameData.phrase = val;
-            saveGame(gameData);
+            const gd = loadGame();
+            if (gd) {
+                gd.phrase = val;
+                saveGame(gd);
+            }
             showGame();
         });
 

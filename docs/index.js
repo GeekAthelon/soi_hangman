@@ -5,6 +5,7 @@
     var phraseEl = document.querySelector(".js-phrase");
     var cluesEl = document.querySelector(".js-clues");
     var lettersEl = document.querySelector(".js-letters");
+    var copytoClipboardButton = document.querySelector(".js-copy-to-clipboard");
     var newButton = document.querySelector(".js-new-game");
     var htmlEl = document.querySelector(".js-html");
     var displayEl = document.querySelector(".js-display");
@@ -145,6 +146,43 @@
             saveGame(gd);
             showGame();
         });
+        copytoClipboardButton.addEventListener("click", function () {
+            var html = htmlEl.textContent;
+            if (html) {
+                copyToClipboard(html);
+            }
+        });
+    }
+    // Copies a string to the clipboard. Must be called from within an
+    // event handler such as click. May return false if it failed, but
+    // this is not always possible. Browser support for Chrome 43+,
+    // Firefox 42+, Safari 10+, Edge and IE 10+.
+    // IE: The clipboard feature may be disabled by an administrator. By
+    // default a prompt is shown the first time the clipboard is
+    // used (per session).
+    function copyToClipboard(text) {
+        var win = window;
+        if (win.clipboardData && win.clipboardData.setData) {
+            // IE specific code path to prevent textarea being shown while dialog is visible.
+            return win.clipboardData.setData("Text", text);
+        }
+        else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+            var textarea = document.createElement("textarea");
+            textarea.textContent = text;
+            textarea.style.position = "fixed"; // Prevent scrolling to bottom of page in MS Edge.
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                return document.execCommand("copy"); // Security exception may be thrown by some browsers.
+            }
+            catch (ex) {
+                statusEl.textContent = "Copy to clipboard failed.";
+                return false;
+            }
+            finally {
+                document.body.removeChild(textarea);
+            }
+        }
     }
 })();
 //# sourceMappingURL=index.js.map

@@ -13,6 +13,7 @@ interface IGameData {
     const cluesEl = document.querySelector(".js-clues") as HTMLTextAreaElement;
     const lettersEl = document.querySelector(".js-letters") as HTMLElement;
     const newButton = document.querySelector(".js-new-game") as HTMLButtonElement;
+    const htmlEl = document.querySelector(".js-html") as HTMLTextAreaElement;
 
     const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
@@ -75,6 +76,16 @@ interface IGameData {
 
             lettersEl.appendChild(b);
         });
+        // Create HTML
+
+        const out: string[] = [];
+        const phraseStr = Array.from(gd.phrase).map((l) =>
+            (gd.lettersAvailable.indexOf(l.toUpperCase()) === -1 ? l : "_"))
+            .join(" ");
+
+        out.push(`Phrase: ${phraseStr}`);
+
+        htmlEl.textContent = out.join("");
     };
 
     const startGame = () => {
@@ -112,11 +123,15 @@ interface IGameData {
         cluesEl.addEventListener("change", () => {
             const val = cluesEl.value;
             gameData.clues = val;
+            saveGame(gameData);
+            showGame(gameData);
         });
 
         phraseEl.addEventListener("change", () => {
             const val = phraseEl.value;
             gameData.phrase = val;
+            saveGame(gameData);
+            showGame(gameData);
         });
     }
 })();

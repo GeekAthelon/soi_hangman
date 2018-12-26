@@ -17,7 +17,7 @@ interface IGameData {
     const htmlEl = document.querySelector(".js-html") as HTMLTextAreaElement;
     const displayEl = document.querySelector(".js-display") as HTMLTextAreaElement;
 
-    const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
     Object.freeze(letters);
 
     const localStorageName = "hangman-game-data";

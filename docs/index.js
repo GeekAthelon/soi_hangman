@@ -9,7 +9,7 @@
     var newButton = document.querySelector(".js-new-game");
     var htmlEl = document.querySelector(".js-html");
     var displayEl = document.querySelector(".js-display");
-    var letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    var letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
     Object.freeze(letters);
     var localStorageName = "hangman-game-data";
     var storage = (function () {

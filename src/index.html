@@ -11,10 +11,6 @@
             margin-bottom: 0.5em;
         }
 
-        fieldset {
-            max-width: 20em;
-        }
-
         label {
             display: block;
             margin-bottom: 1em;
@@ -23,6 +19,18 @@
         label span {
             width: 5em;
             display: inline-block;
+        }
+
+        .two-col {
+            display: flex;
+        }
+
+        .two-col-left,
+        .two-col-right {
+            max-width: 20em;
+            min-width: 20em;
+            border: 2px solid red;
+            margin-right: 2em;
         }
     </style>
 </head>
@@ -34,29 +42,41 @@
         <span class="js-status">Loading...</span>
     </p>
 
-    <fieldset>
-        <legend>Game info</legend>
-        <form action="javascript:return false;">
+    <div class="two-col">
+
+        <fieldset class="two-col-left">
+            <legend>Game info</legend>
+            <form action="javascript:return false;">
+                <div>
+                    <button class="js-new-game" type="button">Start New Game</button>
+                </div>
+                <label>
+                    <label>
+                        <span>Phrase:</span>
+                        <input class="js-phrase">
+                    </label>
+
+                    <label>
+                        <span>Clues:</span>
+                        <textarea class="js-clues"></textarea>
+                    </label>
+
+                    <label>
+                        <span>Letters:</span>
+                        <div class="js-letters"></div>
+                    </label>
+            </form>
+        </fieldset>
+
+        <fieldset class="two-col-right">
+            <legend>HTML</legend> 
+            <textarea style="height:90%; width:100%"></textarea>
             <div>
-                <button class="js-new-game" type="button">Start New Game</button>
+                <button class="js-copy-to-clipboard">Copy to clipboard</button>
             </div>
-            <label>
-                <label>
-                    <span>Phrase:</span>
-                    <input class="js-phrase">
-                </label>
+        </fieldset>
 
-                <label>
-                    <span>Clues:</span>
-                    <textarea class="js-clues"></textarea>
-                </label>
-
-                <label>
-                    <span>Letters:</span>
-                    <div class="js-letters"></div>
-                </label>
-        </form>
-    </fieldset>
+    </div>
     <script src="index.js"></script>
 </body>
 

@@ -12,6 +12,7 @@ interface IGameData {
     const phraseEl = document.querySelector(".js-phrase") as HTMLInputElement;
     const cluesEl = document.querySelector(".js-clues") as HTMLTextAreaElement;
     const lettersEl = document.querySelector(".js-letters") as HTMLElement;
+    const copytoClipboardButton = document.querySelector(".js-copy-to-clipboard") as HTMLButtonElement;
     const newButton = document.querySelector(".js-new-game") as HTMLButtonElement;
     const htmlEl = document.querySelector(".js-html") as HTMLTextAreaElement;
     const displayEl = document.querySelector(".js-display") as HTMLTextAreaElement;
@@ -176,5 +177,43 @@ interface IGameData {
             saveGame(gd);
             showGame();
         });
+
+        copytoClipboardButton.addEventListener("click", () => {
+            const html = htmlEl.textContent;
+            if (html) {
+                copyToClipboard(html);
+            }
+        });
     }
+    // Copies a string to the clipboard. Must be called from within an
+    // event handler such as click. May return false if it failed, but
+    // this is not always possible. Browser support for Chrome 43+,
+    // Firefox 42+, Safari 10+, Edge and IE 10+.
+    // IE: The clipboard feature may be disabled by an administrator. By
+    // default a prompt is shown the first time the clipboard is
+    // used (per session).
+    function copyToClipboard(text: string) {
+        const win = window as any;
+
+        if (win.clipboardData && win.clipboardData.setData) {
+            // IE specific code path to prevent textarea being shown while dialog is visible.
+            return win.clipboardData.setData("Text", text);
+
+        } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+            const textarea = document.createElement("textarea");
+            textarea.textContent = text;
+            textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+            } catch (ex) {
+                statusEl.textContent = "Copy to clipboard failed.";
+                return false;
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+    }
+
 })();

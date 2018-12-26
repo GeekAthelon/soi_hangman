@@ -77,6 +77,7 @@ interface IGameData {
 
         const phraseStr = Array.from(gd.phrase).map((l) =>
             (gd.lettersAvailable.indexOf(l.toUpperCase()) === -1 ? l : "_"))
+            .map((l) => l.replace(/ /, "&nbsp;&nbsp;"))
             .join(" ");
 
         const clueStr = gd.clues.split(/\r\n|\r|\n/).map((s) =>

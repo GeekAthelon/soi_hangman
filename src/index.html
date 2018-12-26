@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Hangman</title>
-    </head>
-    <body>
-        <h1>Hangman</h1>
 
-        <p>Status: 
-            <span class="js-status">Loading...</span>
-        </p>
+<head>
+    <title>Hangman</title>
+</head>
 
-        <fieldset>
-            <legend>Game info</legend>
-            <form action="javascript:return false;">
-            <label>
-                Phrase:
-                <input class="js-phrase">
-            </label>
-            <br>
-            <label>
-                Clues:
-                <textarea class="js-clues">
+<body>
+    <h1>Hangman</h1>
 
-                </textarea>
-            </label>
-            <br>
+    <p>Status:
+        <span class="js-status">Loading...</span>
+    </p>
+
+    <fieldset>
+        <legend>Game info</legend>
+        <form action="javascript:return false;">
+            <div>
+                <button class="js-new-game" type="button">Start New Game</button>
+            </div>
             <label>
-                Letters:
-                <span class="js-letters"></span>
-            </label>
-            </form>
-        </fieldset>
-        <script src="index.js"></script>
-    </body>
+                <label>
+                    Phrase:
+                    <input class="js-phrase">
+                </label>
+                <br>
+                <label>
+                    Clues:
+                    <textarea class="js-clues"></textarea>
+                </label>
+                <br>
+                <label>
+                    Letters:
+                    <span class="js-letters"></span>
+                </label>
+        </form>
+    </fieldset>
+    <script src="index.js"></script>
+</body>
+
 </html>

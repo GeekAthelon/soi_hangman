@@ -1,7 +1,8 @@
+import { start } from "repl";
+
 interface IGameData {
     clues: string;
     lettersAvailable: string[];
-    lettersUsed: string[];
     phrase: string;
 }
 
@@ -51,28 +52,59 @@ interface IGameData {
 
         cluesEl.value = gd.clues;
         phraseEl.value = gd.phrase;
-        lettersEl.textContent = gd.lettersAvailable.join(", ");
+
+        lettersEl.innerHTML = "";
+
+        letters.forEach((letter) => {
+            const b = document.createElement("button");
+            b.textContent = letter;
+            if (gd.lettersAvailable.indexOf(letter) === -1) {
+                b.disabled = true;
+            }
+
+            b.addEventListener("click", () => {
+                const index = gd.lettersAvailable.indexOf(letter);
+                if (index > -1) {
+                    gd.lettersAvailable.splice(index, 1);
+                    showGame(gd);
+                }
+            });
+
+            lettersEl.appendChild(b);
+        });
     };
 
     const startGame = () => {
         phraseEl.value = "";
         cluesEl.value = "";
 
-        gameData = {
+        const gd: IGameData = {
             clues: "",
             lettersAvailable: letters,
-            lettersUsed: [],
             phrase: "",
         };
 
-        saveGame(gameData);
-        showGame(gameData);
+        return gd;
     };
 
     if (!storage) {
         statusEl.textContent = "No localStorage -- cannot use this";
     } else {
         statusEl.textContent = "System check complete";
-        startGame();
+        const loadedData = loadGame();
+        if (loadedData) {
+            gameData = loadedData;
+        } else {
+            gameData = startGame();
+        }
+        const newButton = document.querySelector(".js-new-game") as HTMLButtonElement;
+
+        saveGame(gameData);
+        showGame(gameData);
+        newButton.addEventListener("click", () => {
+            const gd = startGame();
+            saveGame(gd);
+            showGame(gd);
+        });
     }
 })();

@@ -16,6 +16,7 @@ interface IGameData {
     const htmlEl = document.querySelector(".js-html") as HTMLTextAreaElement;
 
     const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    Object.freeze(letters);
 
     const localStorageName = "hangman-game-data";
 
@@ -47,7 +48,9 @@ interface IGameData {
         return null;
     };
 
-    const showGame = (gd: IGameData) => {
+    const showGame = () => {
+        const gd = loadGame();
+
         if (!gd) {
             return;
         }
@@ -66,14 +69,6 @@ interface IGameData {
                 b.disabled = true;
             }
 
-            b.addEventListener("click", () => {
-                const index = gd.lettersAvailable.indexOf(letter);
-                if (index > -1) {
-                    gd.lettersAvailable.splice(index, 1);
-                    showGame(gd);
-                }
-            });
-
             lettersEl.appendChild(b);
         });
         // Create HTML
@@ -83,7 +78,20 @@ interface IGameData {
             (gd.lettersAvailable.indexOf(l.toUpperCase()) === -1 ? l : "_"))
             .join(" ");
 
+        const sortedLetters = letters.map((l) => {
+            const used = (gd.lettersAvailable.indexOf(l) === -1);
+            return { letter: l, used };
+        });
+
+        const notFound = sortedLetters
+            .filter((l) => l.used)
+            .filter((l) => Array.from(gd.phrase.toUpperCase()).indexOf(l.letter) === -1)
+            .map((l) => l.letter)
+            ;
+
         out.push(`Phrase: ${phraseStr}`);
+
+        out.push(`<br>Not found: ${notFound}`);
 
         htmlEl.textContent = out.join("");
     };
@@ -113,25 +121,42 @@ interface IGameData {
         }
 
         saveGame(gameData);
-        showGame(gameData);
+        showGame();
         newButton.addEventListener("click", () => {
             const gd = startGame();
             saveGame(gd);
-            showGame(gd);
+            showGame();
         });
 
         cluesEl.addEventListener("change", () => {
             const val = cluesEl.value;
             gameData.clues = val;
             saveGame(gameData);
-            showGame(gameData);
+            showGame();
         });
 
         phraseEl.addEventListener("change", () => {
             const val = phraseEl.value;
             gameData.phrase = val;
             saveGame(gameData);
-            showGame(gameData);
+            showGame();
+        });
+
+        lettersEl.addEventListener("click", (event) => {
+            const target = event!.target as HTMLButtonElement;
+            const letter = target.textContent;
+            const gd = loadGame();
+
+            if (!gd) {
+                return;
+            }
+
+            const index = gd.lettersAvailable.indexOf(letter!);
+            if (index > -1) {
+                gd.lettersAvailable.splice(index, 1);
+            }
+            saveGame(gd);
+            showGame();
         });
     }
 })();

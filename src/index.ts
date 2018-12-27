@@ -68,8 +68,11 @@ interface IGameData {
 
         // Create HTML
         const phraseStr = Array.from(gd.phrase).map((l) => {
-            const status = gd.lettersAvailable.filter(((la) => la.symbol === l))[0];
-            return status.selected ? "_" : status.symbol;
+            const status = gd.lettersAvailable.filter(((la) => la.symbol === l.toUpperCase()))[0];
+            if (!status) {
+                return l;
+            }
+            return status.selected ? l : "_";
         })
             .map((l) => l.replace(/ /, "&nbsp;&nbsp;"))
             .join(" ");
@@ -106,6 +109,9 @@ interface IGameData {
             lettersAvailable: JSON.parse(JSON.stringify(khars)),
             phrase: "",
         };
+
+        const els = document.querySelectorAll(".button-pressed");
+        Array.from(els).forEach((el) => el.classList.remove("button-pressed"));
 
         return gd;
     };

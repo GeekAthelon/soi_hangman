@@ -63,12 +63,12 @@ interface IGameData {
         lettersEl.innerHTML = "";
 
         letters.forEach((letter) => {
-            const b = document.createElement("button");
+            const b = document.createElement("span");
             b.classList.add("letter-button");
 
             b.textContent = letter;
             if (gd.lettersAvailable.indexOf(letter) === -1) {
-                b.disabled = true;
+               // b.disabled = true;
             }
 
             lettersEl.appendChild(b);

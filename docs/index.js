@@ -48,11 +48,11 @@
         phraseEl.value = gd.phrase;
         lettersEl.innerHTML = "";
         letters.forEach(function (letter) {
-            var b = document.createElement("button");
+            var b = document.createElement("span");
             b.classList.add("letter-button");
             b.textContent = letter;
             if (gd.lettersAvailable.indexOf(letter) === -1) {
-                b.disabled = true;
+                // b.disabled = true;
             }
             lettersEl.appendChild(b);
         });

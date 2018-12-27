@@ -1,6 +1,10 @@
+interface IKhar {
+    symbol: string;
+    selected: boolean;
+}
 interface IGameData {
     clues: string;
-    lettersAvailable: string[];
+    lettersAvailable: IKhar[];
     phrase: string;
 }
 
@@ -17,8 +21,10 @@ interface IGameData {
     const htmlEl = document.querySelector(".js-html") as HTMLTextAreaElement;
     const displayEl = document.querySelector(".js-display") as HTMLTextAreaElement;
 
-    const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-    Object.freeze(letters);
+    const khars = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        .map((s) => ({ symbol: s, selected: false } as IKhar));
+
+    Object.freeze(khars);
 
     const localStorageName = "hangman-game-data";
 
@@ -60,25 +66,11 @@ interface IGameData {
         cluesEl.value = gd.clues;
         phraseEl.value = gd.phrase;
 
-        lettersEl.innerHTML = "";
-
-        letters.forEach((letter) => {
-            const b = document.createElement("button");
-
-            if (gd.lettersAvailable.indexOf(letter) === -1) {
-                b.classList.add("button-pressed");
-            }
-
-            b.textContent = letter;
-            b.classList.add("letter-button");
-            b.classList.add("button");
-            lettersEl.appendChild(b);
-        });
-
         // Create HTML
-
-        const phraseStr = Array.from(gd.phrase).map((l) =>
-            (gd.lettersAvailable.indexOf(l.toUpperCase()) === -1 ? l : "_"))
+        const phraseStr = Array.from(gd.phrase).map((l) => {
+            const status = gd.lettersAvailable.filter(((la) => la.symbol === l))[0];
+            return status.selected ? "_" : status.symbol;
+        })
             .map((l) => l.replace(/ /, "&nbsp;&nbsp;"))
             .join(" ");
 
@@ -86,15 +78,10 @@ interface IGameData {
             (`<li>${s}</li>`))
             .join("");
 
-        const sortedLetters = letters.map((l) => {
-            const used = (gd.lettersAvailable.indexOf(l) === -1);
-            return { letter: l, used };
-        });
-
-        const notFound = sortedLetters
-            .filter((l) => l.used)
-            .filter((l) => Array.from(gd.phrase.toUpperCase()).indexOf(l.letter) === -1)
-            .map((l) => l.letter)
+        const notFound = gd.lettersAvailable
+            .filter((khar) => khar.selected)
+            .filter((khar) => Array.from(gd.phrase.toUpperCase()).indexOf(khar.symbol) === -1)
+            .map((khar) => khar.symbol)
             ;
 
         // Don't use a multi-line string literal.
@@ -116,7 +103,7 @@ interface IGameData {
 
         const gd: IGameData = {
             clues: "",
-            lettersAvailable: letters,
+            lettersAvailable: JSON.parse(JSON.stringify(khars)),
             phrase: "",
         };
 
@@ -162,28 +149,48 @@ interface IGameData {
             showGame();
         });
 
-        lettersEl.addEventListener("click", (event) => {
-            const target = event!.target as HTMLButtonElement;
-            const letter = target.textContent;
-            const gd = loadGame();
-
-            if (!gd) {
-                return;
-            }
-
-            const index = gd.lettersAvailable.indexOf(letter!);
-            if (index > -1) {
-                gd.lettersAvailable.splice(index, 1);
-            }
-            saveGame(gd);
-            showGame();
-        });
-
         copytoClipboardButton.addEventListener("click", () => {
             const html = htmlEl.textContent;
             if (html) {
                 copyToClipboard(html);
             }
+        });
+
+        gameData.lettersAvailable.forEach((khar) => {
+            const setPressedState = (e: HTMLElement, state: boolean) => {
+                if (state) {
+                    e.classList.add("button-pressed");
+                } else {
+                    e.classList.remove("button-pressed");
+                }
+            };
+
+            const b = document.createElement("button");
+
+            b.textContent = khar.symbol;
+            b.classList.add("letter-button");
+            b.classList.add("button");
+            b.dataset.symbol = khar.symbol;
+            lettersEl.appendChild(b);
+            const k = gameData.lettersAvailable.filter((l) => l.symbol === khar.symbol)[0];
+            setPressedState(b, k.selected);
+
+            b.addEventListener("click", (e) => {
+                const gd = loadGame();
+                if (!gd) {
+                    return;
+                }
+
+                const target = e.target as HTMLElement;
+                const symbol = target.dataset.symbol;
+
+                const k1 = gd.lettersAvailable.filter((l) => l.symbol === symbol)[0];
+                k1.selected = !k1.selected;
+                setPressedState(b, k1.selected);
+
+                saveGame(gd);
+                showGame();
+            });
         });
     }
     // Copies a string to the clipboard. Must be called from within an

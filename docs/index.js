@@ -9,8 +9,9 @@
     var newButton = document.querySelector(".js-new-game");
     var htmlEl = document.querySelector(".js-html");
     var displayEl = document.querySelector(".js-display");
-    var letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-    Object.freeze(letters);
+    var khars = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        .map(function (s) { return ({ symbol: s, selected: false }); });
+    Object.freeze(khars);
     var localStorageName = "hangman-game-data";
     var storage = (function () {
         var uid = "" + new Date().getTime();
@@ -46,19 +47,10 @@
         }
         cluesEl.value = gd.clues;
         phraseEl.value = gd.phrase;
-        lettersEl.innerHTML = "";
-        letters.forEach(function (letter) {
-            var b = document.createElement("span");
-            b.classList.add("letter-button");
-            b.textContent = letter;
-            if (gd.lettersAvailable.indexOf(letter) === -1) {
-                // b.disabled = true;
-            }
-            lettersEl.appendChild(b);
-        });
         // Create HTML
         var phraseStr = Array.from(gd.phrase).map(function (l) {
-            return (gd.lettersAvailable.indexOf(l.toUpperCase()) === -1 ? l : "_");
+            var status = gd.lettersAvailable.filter((function (la) { return la.symbol === l; }))[0];
+            return status.selected ? "_" : status.symbol;
         })
             .map(function (l) { return l.replace(/ /, "&nbsp;&nbsp;"); })
             .join(" ");
@@ -66,14 +58,10 @@
             return ("<li>" + s + "</li>");
         })
             .join("");
-        var sortedLetters = letters.map(function (l) {
-            var used = (gd.lettersAvailable.indexOf(l) === -1);
-            return { letter: l, used: used };
-        });
-        var notFound = sortedLetters
-            .filter(function (l) { return l.used; })
-            .filter(function (l) { return Array.from(gd.phrase.toUpperCase()).indexOf(l.letter) === -1; })
-            .map(function (l) { return l.letter; });
+        var notFound = gd.lettersAvailable
+            .filter(function (khar) { return khar.selected; })
+            .filter(function (khar) { return Array.from(gd.phrase.toUpperCase()).indexOf(khar.symbol) === -1; })
+            .map(function (khar) { return khar.symbol; });
         // Don't use a multi-line string literal.
         // SOI processes CR|LF and turns them into
         // `<p>`.
@@ -90,7 +78,7 @@
         cluesEl.value = "";
         var gd = {
             clues: "",
-            lettersAvailable: letters,
+            lettersAvailable: JSON.parse(JSON.stringify(khars)),
             phrase: ""
         };
         return gd;
@@ -132,25 +120,42 @@
             }
             showGame();
         });
-        lettersEl.addEventListener("click", function (event) {
-            var target = event.target;
-            var letter = target.textContent;
-            var gd = loadGame();
-            if (!gd) {
-                return;
-            }
-            var index = gd.lettersAvailable.indexOf(letter);
-            if (index > -1) {
-                gd.lettersAvailable.splice(index, 1);
-            }
-            saveGame(gd);
-            showGame();
-        });
         copytoClipboardButton.addEventListener("click", function () {
             var html = htmlEl.textContent;
             if (html) {
                 copyToClipboard(html);
             }
+        });
+        gameData.lettersAvailable.forEach(function (khar) {
+            var setPressedState = function (e, state) {
+                if (state) {
+                    e.classList.add("button-pressed");
+                }
+                else {
+                    e.classList.remove("button-pressed");
+                }
+            };
+            var b = document.createElement("button");
+            b.textContent = khar.symbol;
+            b.classList.add("letter-button");
+            b.classList.add("button");
+            b.dataset.symbol = khar.symbol;
+            lettersEl.appendChild(b);
+            var k = gameData.lettersAvailable.filter(function (l) { return l.symbol === khar.symbol; })[0];
+            setPressedState(b, k.selected);
+            b.addEventListener("click", function (e) {
+                var gd = loadGame();
+                if (!gd) {
+                    return;
+                }
+                var target = e.target;
+                var symbol = target.dataset.symbol;
+                var k1 = gd.lettersAvailable.filter(function (l) { return l.symbol === symbol; })[0];
+                k1.selected = !k1.selected;
+                setPressedState(b, k1.selected);
+                saveGame(gd);
+                showGame();
+            });
         });
     }
     // Copies a string to the clipboard. Must be called from within an

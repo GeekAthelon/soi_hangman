@@ -49,8 +49,11 @@
         phraseEl.value = gd.phrase;
         // Create HTML
         var phraseStr = Array.from(gd.phrase).map(function (l) {
-            var status = gd.lettersAvailable.filter((function (la) { return la.symbol === l; }))[0];
-            return status.selected ? "_" : status.symbol;
+            var status = gd.lettersAvailable.filter((function (la) { return la.symbol === l.toUpperCase(); }))[0];
+            if (!status) {
+                return l;
+            }
+            return status.selected ? l : "_";
         })
             .map(function (l) { return l.replace(/ /, "&nbsp;&nbsp;"); })
             .join(" ");
@@ -81,6 +84,8 @@
             lettersAvailable: JSON.parse(JSON.stringify(khars)),
             phrase: ""
         };
+        var els = document.querySelectorAll(".button-pressed");
+        Array.from(els).forEach(function (el) { return el.classList.remove("button-pressed"); });
         return gd;
     };
     if (!storage) {

@@ -118,7 +118,7 @@ const runGame = (() => {
     };
 
     if (!storage) {
-        statusEl.textContent = "No localStorage -- cannot use this";
+        statusEl.textContent = "GO AWAY! WE DO NOT WANT YOU AND YOUR BROKEN BROWSER TYPE HERE";
     } else {
         statusEl.textContent = "System check complete";
         const loadedData = loadGame();

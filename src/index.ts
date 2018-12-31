@@ -8,7 +8,7 @@ interface IGameData {
     phrase: string;
 }
 
-(() => {
+const runGame = (() => {
 
     let gameData: IGameData;
 
@@ -177,6 +177,8 @@ interface IGameData {
             b.classList.add("letter-button");
             b.classList.add("button");
             b.dataset.symbol = khar.symbol;
+            b.type = "button";
+
             lettersEl.appendChild(b);
             const k = gameData.lettersAvailable.filter((l) => l.symbol === khar.symbol)[0];
             setPressedState(b, k.selected);
@@ -230,4 +232,158 @@ interface IGameData {
         }
     }
 
-})();
+});
+
+const addGame = (() => {
+    const shellhtml = `
+    <h1>Hangman</h1>
+
+    <p>Status:
+        <span class="js-status">Loading...</span>
+    </p>
+
+    <div class="two-col">
+
+        <fieldset class="two-col-left">
+            <legend>Game info</legend>
+            <form action="">
+                <div>
+                    <button class="button js-new-game" type="button">Start New Game</button>
+                </div>
+                <label>
+                    <label>
+                        <span>Phrase:</span>
+                        <input class="js-phrase">
+                    </label>
+
+                    <label>
+                        <span>Clues:</span>
+                        <textarea class="js-clues"></textarea>
+                    </label>
+
+                    <label>
+                        <span>Letters:</span>
+                    </label>
+                    <div class="js-letters"></div>
+            </form>
+        </fieldset>
+
+        <fieldset class="two-col-right">
+            <legend>HTML</legend>
+            <textarea class="js-html" style="height:45%; width:100%"></textarea>
+            <div class="js-display" style="height:45%; width:100%"></div>
+            <div>
+                <button class="button js-copy-to-clipboard" type="button">Copy <b>HTML</b> to clipboard</button>
+            </div>
+        </fieldset>
+
+    </div>
+   `;
+
+    const sheet = (() => {
+        // Create the <style> tag
+        const style = document.createElement("style");
+
+        // Add a media (and/or media query) here if you'd like!
+        // style.setAttribute("media", "screen")
+        // style.setAttribute("media", "only screen and (max-width : 1024px)")
+
+        // WebKit hack :(
+        style.appendChild(document.createTextNode(""));
+
+        // Add the <style> element to the page
+        document.head.appendChild(style);
+
+        return style.sheet;
+    })();
+
+    if (!sheet) {
+        throw new Error("Sheet cannot be null");
+    }
+
+    const addCSSRule = (sheetAny: StyleSheet, selector: string, rules: string, index?: number) => {
+        const tsheet = sheetAny as any;
+
+        if ("insertRule" in tsheet) {
+            tsheet.insertRule(selector + "{" + rules + "}", index);
+        } else if ("addRule" in tsheet) {
+            tsheet.addRule(selector, rules, index);
+        }
+    };
+
+    addCSSRule(sheet, `.two-col .button`, `
+            border-top: 1px solid #96d1f8;
+            background: #65a9d7;
+            background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+            background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+            background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+            background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+            background: -o-linear-gradient(top, #3e779d, #65a9d7);
+            padding: 5px 10px;
+            -webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            border-radius: 8px;
+            -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+            -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+            box-shadow: rgba(0,0,0,1) 0 1px 0;
+            text-shadow: rgba(0,0,0,.4) 0 1px 0;
+            color: white;
+            font-size: 14px;
+            font-family: 'Lucida Grande', Helvetica, Arial, Sans-Serif;
+            text-decoration: none;
+            vertical-align: middle;
+        `);
+    addCSSRule(sheet, `.two-col .button:hover`, `
+            border-top-color: #28597a;
+            background: #28597a;
+            color: #ccc;
+        `);
+    addCSSRule(sheet, `.two-col .button:active`, `
+            border-top-color: #1b435e;
+            background: #1b435e;
+        `);
+    addCSSRule(sheet, `.two-col .button-pressed`, `
+            background: black;
+            color: gray;
+        `);
+    addCSSRule(sheet, `.two-col .letter-button`, `
+            width: 2em;
+            margin-left: 0.5em;
+            margin-bottom: 0.5em;
+        `);
+
+    addCSSRule(sheet, `.two-col label`, `
+            display: block;
+            margin-bottom: 1em;
+        `);
+
+    addCSSRule(sheet, `.two-col label span`, `
+            width: 5em;
+            display: inline-block;
+        `);
+
+    addCSSRule(sheet, `.two-col`, `
+            display: flex;
+            flex-wrap: wrap;
+        `);
+
+    addCSSRule(sheet, `.two-col-left, .two-col-right`, `
+            max-width: 20em;
+            min-width: 20em;
+            border: 2px solid #65a9d7;
+            margin-right: 2em;
+            background-color:  #96d1f8;
+        `);
+
+    addCSSRule(sheet, `.two-col legend`, `
+            background-color:  #96d1f8;
+            border: 2px solid #65a9d7;
+            color: black;
+   `);
+
+    const hangmanHome = document.getElementById("hangman-home");
+    hangmanHome!.innerHTML = shellhtml;
+});
+
+addGame();
+runGame();

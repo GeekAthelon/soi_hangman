@@ -85,6 +85,7 @@ const runGame = (() => {
             .filter((khar) => khar.selected)
             .filter((khar) => Array.from(gd.phrase.toUpperCase()).indexOf(khar.symbol) === -1)
             .map((khar) => khar.symbol)
+            .join(" ")
             ;
 
         // Don't use a multi-line string literal.
